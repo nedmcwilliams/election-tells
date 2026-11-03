@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Election Night 2026 — Early Tells</title>
+<style>
+:root{
+  --bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--text:#e8eaf0;--muted:#8d93a3;
+  --red:#d6453d;--red2:#7a2420;--blue:#3b7ddd;--blue2:#1f3f73;--ind:#c9a227;--green:#3fa66b;
+  --rip:#b8352e;--tide:#5b8fd9;--wave:#2f66c2;--tsu:#1a3f85;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:#9cc0ff}
+header{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 14px}
+.hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+h1{font-size:18px;margin:0;letter-spacing:.2px}
+.status{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#666;margin-right:4px}
+.dot.live{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot.err{background:var(--red)}
+.clock{font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)}
+main{padding:12px 12px 60px;max-width:1280px;margin:0 auto}
+section{margin:14px 0 22px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.gauge{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 6px;margin-bottom:10px}
+.gauge svg{width:100%;max-width:640px;display:block;margin:0 auto;overflow:visible}
+.gauge .needle{transition:transform 1.2s cubic-bezier(.3,.9,.3,1);transform-origin:200px 190px}
+.gauge .gl{font-size:11px;font-weight:800;fill:#fff;letter-spacing:.04em}
+.gauge .gs{font-size:9px;fill:#cfd3dc;font-weight:500}
+.gauge .read{text-align:center;margin-top:-4px}
+.gauge .read .big{font-size:20px;font-weight:800}
+.gauge .read .sub{font-size:12px;color:var(--muted)}
+.gauge .seg{display:flex;justify-content:center;gap:6px;margin-top:6px}
+.gauge .seg button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer}
+.gauge .seg button.on{color:#fff;border-color:#5b6475;background:#2a3040}
+@media (max-width:640px){.gauge .read .big{font-size:17px}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tile .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15;margin-top:2px}
+.tile .s{font-size:12px;color:var(--muted);margin-top:2px}
+.band{display:inline-block;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.03em;color:#fff;white-space:nowrap}
+.b0{background:var(--rip)}.b1{background:var(--tide)}.b2{background:var(--wave)}.b3{background:var(--tsu)}.bx{background:#3a3f4b;color:#cfd3dc}
+.verdict{font-size:15px;font-weight:600;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:11px;color:var(--muted);text-align:left;font-weight:600;padding:6px 6px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
+td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.race{cursor:pointer}
+tr.race:hover{background:var(--panel2)}
+tr.closegrp td{background:var(--panel2);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 6px}
+.st{font-weight:700;font-size:15px}
+.mu{color:var(--muted);font-size:12px}
+.m{font-weight:700;font-size:16px;white-space:nowrap}
+.mD{color:#7fb0ff}.mR{color:#ff8a80}.mI{color:#e9c45a}.mE{color:var(--muted)}
+.called{white-space:nowrap;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:#2b2f3a;color:#fff}
+.called.D{background:var(--blue)}.called.R{background:var(--red)}.called.I{background:var(--ind);color:#111}
+.pr{font-size:12px;color:var(--muted);white-space:nowrap}
+.thr{font-size:11px;color:var(--muted);white-space:nowrap}
+.thr b{color:#cfd3dc;font-weight:600}
+tr.detail td{background:#12151b;font-size:13px;padding:8px 10px}
+.cands{display:flex;gap:14px;flex-wrap:wrap}
+.cand{min-width:150px}
+.bar{height:6px;background:#2a2f3a;border-radius:3px;overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%}
+.pD{background:var(--blue)}.pR{background:var(--red)}.pI{background:var(--ind)}.pO{background:#666}
+.grid{display:grid;grid-template-columns:62px repeat(4,1fr);gap:4px;min-width:640px}
+.sgrid{display:grid;grid-template-columns:56px 150px 90px repeat(4,1fr);gap:4px;min-width:760px;align-items:stretch}
+
+.sgrid .sh{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:6px 4px;align-self:end}
+.sgrid .rowlab{grid-column:1/-1;text-align:left;border:0;background:var(--panel2);border-radius:6px;padding:4px 8px;font-size:11px;letter-spacing:.06em}
+.sgrid .sst{font-weight:800;font-size:15px;padding:6px 4px;cursor:pointer}
+.sgrid .sst small{display:block;font-weight:500;font-size:10px;color:var(--muted)}
+.sgrid .srace{font-size:12px;padding:6px 4px;line-height:1.25;cursor:pointer}
+.sgrid .srace .mu{font-size:11px}
+.sgrid .sstat{font-size:12px;padding:6px 4px;line-height:1.3}
+.sgrid .bc{border-radius:6px;padding:5px 6px;font-size:11px;font-weight:700;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;opacity:.42;min-height:40px}
+.sgrid .bc.on{opacity:1;box-shadow:inset 0 0 0 2px #fff}
+.sgrid .bc .lm{font-size:14px;font-weight:800;margin-top:1px}
+.sgrid .bc .lm small{font-size:10px;font-weight:500;opacity:.85}
+.sgrid .sdet{grid-column:1/-1;background:#12151b;border-radius:6px;padding:8px 10px;font-size:13px}
+.gridwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--panel)}
+.gh{font-size:11px;font-weight:800;text-align:center;padding:6px 4px;border-radius:6px;color:#fff;letter-spacing:.04em}
+.gh small{display:block;font-weight:500;opacity:.85}
+.rowlab{font-size:12px;font-weight:700;color:var(--muted);padding:6px 2px;text-align:center;border-right:1px solid var(--line)}
+.rowlab small{display:block;font-weight:500;font-size:10px}
+.cell{background:var(--panel2);border-radius:6px;padding:4px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:34px}
+.cell.rip{background:#2a1716}.cell.tide{background:#182236}.cell.wave{background:#152542}.cell.tsu{background:#121d33}
+.chip{flex:1 1 120px;border-radius:6px;padding:4px 6px;font-size:11px;line-height:1.25;border:1px solid transparent;cursor:pointer;position:relative}
+.chip .d{font-weight:800;font-size:12px}
+.chip .w{color:#cfd3dc}
+.chip .r{font-weight:700;margin-top:1px;white-space:nowrap}
+.chip.hD{background:var(--blue2);border-color:#2d5aa8}.chip.hR{background:var(--red2);border-color:#a33a33}
+.chip.dash{background:transparent;border:1.5px dashed #e07070;color:#f3b2ad}
+.chip.winD{box-shadow:inset 0 0 0 2px #7fb0ff}.chip.winR{box-shadow:inset 0 0 0 2px #ff8a80}
+.chip.ledD .r{color:#7fb0ff}.chip.ledR .r{color:#ff8a80}
+.chip.flip:after{content:"FLIP";position:absolute;top:2px;right:4px;font-size:9px;font-weight:900;color:#ffd166}
+.legend{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+.keys{display:flex;flex-direction:column;gap:6px}
+.key{display:grid;grid-template-columns:62px 1fr auto;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.key .t{font-size:12px;font-weight:700;color:var(--muted)}
+.key .txt{font-size:13px}
+.key .txt small{display:block;color:var(--muted);font-size:11px}
+.key .sig{font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;background:#2b2f3a;color:#cfd3dc;white-space:nowrap;cursor:default}
+.key.yes .sig{background:#1e5a3a;color:#bff0d0}.key.no .sig{background:#4a2423;color:#ffc9c4}.key.man .sig{background:#3a3a1e;color:#efe3a0;cursor:pointer}
+.key.yes{border-color:#2f8a57}.key.no{border-color:#8a3a35}
+.govs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.gov{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+.banner{background:#3a2a1a;border:1px solid #8a6a3a;color:#ffe2b8;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:10px;display:none}
+button.small{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer}
+@media (max-width:640px){
+  .thr{display:none}
+  td,th{padding:6px 4px}
+  .tile .v{font-size:22px}
+  .pty{display:none}
+  .mt{font-size:13px;line-height:1.2}
+  .m{font-size:15px}
+  .m .mu{display:block;font-size:10px}
+  .band{font-size:10px;padding:2px 5px}
+  .called{font-size:9px;padding:2px 4px}
+  body{font-size:14px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <h1>Election Night 2026 — Early Tells</h1>
+    <div class="status">
+      <span><span class="dot" id="dot"></span><span id="mode">connecting…</span></span>
+      <span id="upd">—</span>
+      <span class="clock" id="clock">—</span>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="banner" id="banner"></div>
+
+  <section>
+    <h2>Scoreboard</h2>
+    <div class="gauge" id="gauge"></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <h2>Senate — Dems need net +4</h2>
+    <div class="gridwrap"><div class="sgrid" id="senate"></div></div>
+    <div class="note">Live margin = leader's lead in points among reported votes (D vs R; for NE, Osborn (I) vs Ricketts). Band = where that margin currently sits against the graphic's benchmarks (Red Riptide / Blue Tide / Blue Wave / Blue Tsunami). Treat margins as noise below ~30% in and as a lean below ~70% in. Tap a state for candidate counts. Column headers = chamber-wide outcome each band implies (GOP +3 to even … D +7 or more).</div>
+  </section>
+
+  <section>
+    <h2>House tells — by poll close and band</h2>
+    <div class="gridwrap"><div class="grid" id="house"></div></div>
+    <div class="legend">Chip color = party holding the seat (blue D, red R). ★ = redrawn since 2024. Dashed chips are the Rove "GOP clears this bar → red signal" tests. Live line shows leader's margin and % in; ✔ = AP call; outline = winner's party. "FLIP" = AP flagged a party switch.</div>
+    <div class="note" id="dashtests"></div>
+  </section>
+
+  <section>
+    <h2>Keys to watch for</h2>
+    <div class="keys" id="keys"></div>
+    <div class="note">Auto-evaluated keys use statewide counts from the feed. County-level keys (Detroit, South Texas, Johnson Co., Iowa farm counties) can't be computed from this feed — tap to mark them yourself. Maine RCV can take days; Alaska RCV tabulation starts Nov 18.</div>
+  </section>
+
+  <section>
+    <h2>Governors in the key list</h2>
+    <div class="govs" id="govs"></div>
+  </section>
+
+  <div class="note" id="foot">Counts and calls: AP via CNN's public results feed. Benchmarks: the "early tells" graphic (DDHQ, Cook, Rove/WSJ, Chuck Todd, Axios, 270toWin). Senate baseline 53 R – 47 D.</div>
+</main>
+
+<script>
+/* ---------------- Benchmarks transcribed from the graphic ---------------- */
+// Senate: D-margin lower bounds for [Blue Tide, Blue Wave, Blue Tsunami]; below first = Red Riptide.
+// NE margin is Osborn(I) minus Ricketts(R).
+const SENATE = [
+ {st:"FL",close:"7:00",r:"Moody",d:"Nixon",rcp:"R+6.1",b:[-9.5,-3.5,0.5],sp:true,lbl:["R 10+","R 4–9","R 3–Even","Any D win"]},
+ {st:"GA",close:"7:00",r:"Collins",d:"Ossoff",rcp:"D+8.2",b:[5,10.5,14.5],lbl:["R win or D<5","D 5–10","D 11–14","D 15+"]},
+ {st:"SC",close:"7:00",r:"Graham",d:"Andrews",rcp:"R+2.7",b:[-8.5,0.5,4.5],lbl:["R 9+","R 8–Even","D 1–4","D 5+"]},
+ {st:"NC",close:"7:30",r:"Whatley",d:"Cooper",rcp:"D+10.7",b:[6,12.5,16.5],lbl:["R win or D<6","D 6–12","D 13–16","D 17+"]},
+ {st:"OH",close:"7:30",r:"Husted",d:"Brown",rcp:"D+2.6",b:[-1.5,6.5,10.5],sp:true,lbl:["R 2+","R 1–D 6","D 7–10","D 11+"]},
+ {st:"ME",close:"8:00",r:"Collins",d:"Jackson",rcp:"D+1.2",b:[-0.5,4.5,8.5],lbl:["R 1+","Even–D 4","D 5–8","D 9+"]},
+ {st:"NH",close:"8:00",r:"Sununu",d:"Pappas",rcp:"D+6.2",b:[4,11.5,15.5],lbl:["R win or D<4","D 4–11","D 12–15","D 16+"]},
+ {st:"TX",close:"8:00",r:"Paxton",d:"Talarico",rcp:"D+1.8",b:[-4.5,4.5,8.5],lbl:["R 5+","R 4–D 4","D 5–8","D 9+"]},
+ {st:"MI",close:"8:00",r:"Rogers",d:"El-Sayed",rcp:"D+3.5",b:[0,7.5,11.5],lbl:["Any R win","D 0–7","D 8–11","D 12+"]},
+ {st:"KS",close:"8:00",r:"Marshall",d:"Hamilton",rcp:"D+2.4",b:[-6.5,3.5,7.5],lbl:["R 7+","R 6–D 3","D 4–7","D 8+"]},
+ {st:"MS",close:"8:00",r:"Hyde-Smith",d:"Colom",rcp:"—",b:[-13.5,-2.5,0.5],lbl:["R 14+","R 3–13","R 2–Even","D 1+"]},
+ {st:"IA",close:"9:00",r:"Hinson",d:"Turek",rcp:"R+0.5",b:[-4.5,2.5,6.5],lbl:["R 5+","R 4–D 2","D 3–6","D 7+"]},
+ {st:"NE",close:"9:00",r:"Ricketts",d:"Osborn (I)",rcp:"R+1.4",b:[-4.5,0.5,4.5],ind:true,lbl:["R 5+","R 4–Even","I 1–4","I 5+"]},
+ {st:"MN",close:"9:00",r:"Tafoya",d:"Flanagan",rcp:"D+5.1",b:[1,12.5,16.5],lbl:["R win or D<1","D 1–12","D 13–16","D 17+"]},
+];
+const SEN_HOLD = {AL:"R",AK:"R",AR:"R",FL:"R",ID:"R",IA:"R",KS:"R",KY:"R",LA:"R",ME:"R",MS:"R",MT:"R",NE:"R",NC:"R",OH:"R",OK:"R",SC:"R",SD:"R",TN:"R",TX:"R",WV:"R",WY:"R",
+                  CO:"D",DE:"D",GA:"D",IL:"D",MA:"D",MI:"D",MN:"D",NH:"D",NJ:"D",NM:"D",OR:"D",RI:"D",VA:"D"};
+const BANDS = ["Red Riptide","Blue Tide","Blue Wave","Blue Tsunami"];
+const BANDSUB = ["GOP holds or gains","Dems win 218–229","Dems win 230–239","Dems win 240+"];
+
+// House tells. band: 0 rip,1 tide,2 wave,3 tsunami. hold = party holding seat. star = redrawn.
+const ROWS = [
+ {t:"6:00",s:"KY (east) · IN"},{t:"7:00",s:"FL · GA · SC · VA · IN · KY"},{t:"7:30",s:"NC · OH"},
+ {t:"8:00",s:"PA · MI · NJ · TX · ME"},{t:"9:00",s:"NY · AZ · CO · WI · NE · IA"},{t:"Later",s:"MT 10pm · CA 11pm"}
+];
+const HOUSE = [
+ {d:"KY-06",w:"Open seat",h:"R",row:"6:00",band:2},{d:"IN-05",w:"Spartz",h:"R",row:"6:00",band:2},
+ {d:"VA-07",w:"Vindman",h:"D",row:"7:00",band:0},{d:"IN-01",w:"Mrvan",h:"D",row:"7:00",band:0},{d:"GA-02",w:"Bishop",h:"D",row:"7:00",band:0},
+ {d:"FL-14",w:"Castor",h:"D",row:"7:00",band:1,star:1},{d:"FL-22",w:"Open seat",h:"D",row:"7:00",band:1,star:1},{d:"FL-25",w:"Moskowitz",h:"D",row:"7:00",band:1,star:1},
+ {d:"VA-02",w:"Kiggans",h:"R",row:"7:00",band:1},{d:"SC-01",w:"Open seat",h:"R",row:"7:00",band:1},
+ {d:"FL-09",w:"Soto",h:"D",row:"7:00",band:2,star:1},{d:"FL-07",w:"Open seat",h:"R",row:"7:00",band:2},{d:"VA-01",w:"Wittman",h:"R",row:"7:00",band:2},
+ {d:"VA-05",w:"McGuire",h:"R",row:"7:00",band:3},{d:"FL-27",w:"Salazar",h:"R",row:"7:00",band:3},{d:"GA-01",w:"Open seat",h:"R",row:"7:00",band:3},{d:"SC-02",w:"Wilson",h:"R",row:"7:00",band:3},
+ {d:"OH-01",w:"Landsman",h:"D",row:"7:30",band:0,star:1},{d:"OH-13",w:"Sykes",h:"D",row:"7:30",band:0,star:1},
+ {d:"NC-01",w:"Davis",h:"D",row:"7:30",band:1,star:1},{d:"NC-11",w:"Open seat",h:"R",row:"7:30",band:1},{d:"OH-07",w:"Miller",h:"R",row:"7:30",band:1},{d:"OH-09",w:"Kaptur",h:"D",row:"7:30",band:1,star:1},
+ {d:"OH-10",w:"Turner",h:"R",row:"7:30",band:2},
+ {d:"NC-09",w:"Hudson",h:"R",row:"7:30",band:3},{d:"NC-05",w:"Foxx",h:"R",row:"7:30",band:3},
+ {d:"PA-08",w:"Bresnahan",h:"R",row:"8:00",band:1},{d:"MI-04",w:"Huizenga",h:"R",row:"8:00",band:1},{d:"MI-07",w:"Barrett",h:"R",row:"8:00",band:1},
+ {d:"MI-10",w:"Open seat",h:"R",row:"8:00",band:1},{d:"NJ-07",w:"Kean",h:"R",row:"8:00",band:1},{d:"PA-01",w:"Fitzpatrick",h:"R",row:"8:00",band:1},
+ {d:"ME-02",w:"Open seat",h:"D",row:"8:00",band:2},{d:"TX-15",w:"De La Cruz",h:"R",row:"8:00",band:2,star:1},
+ {d:"NJ-02",w:"Van Drew",h:"R",row:"8:00",band:3},
+ {d:"NY-17",w:"Lawler",h:"R",row:"9:00",band:1},{d:"AZ-01",w:"Open seat",h:"R",row:"9:00",band:1},{d:"AZ-06",w:"Ciscomani",h:"R",row:"9:00",band:1},
+ {d:"CO-08",w:"Evans",h:"R",row:"9:00",band:1},{d:"WI-03",w:"Van Orden",h:"R",row:"9:00",band:1},{d:"NE-02",w:"Open seat",h:"R",row:"9:00",band:1},
+ {d:"IA-01",w:"Miller-Meeks",h:"R",row:"9:00",band:1},{d:"IA-02",w:"Open seat",h:"R",row:"9:00",band:1},{d:"IA-03",w:"Nunn",h:"R",row:"9:00",band:1},{d:"CO-05",w:"Crank",h:"R",row:"9:00",band:1},
+ {d:"MT-01",w:"Open seat",h:"R",row:"Later",band:1},{d:"CA-22",w:"Valadao",h:"R",row:"Later",band:1,star:1},{d:"CA-48",w:"Open seat",h:"R",row:"Later",band:1,star:1},
+];
+// Rove dashed tests (GOP clears bar → red signal)
+const DASH = [
+ {row:"6:00",name:"KY-06",test:"GOP by 10+",type:"margin",d:["KY-06"],need:10},
+ {row:"6:00",name:"IN-05",test:"GOP by 15+",type:"margin",d:["IN-05"],need:15},
+ {row:"7:00",name:"FL redraw",test:"GOP 4 for 4",type:"count",d:["FL-09","FL-14","FL-22","FL-25"],need:4},
+ {row:"8:00",name:"TX redraw",test:"GOP 4+ of 5",type:"count",d:["TX-09","TX-28","TX-32","TX-34","TX-35"],need:4},
+ {row:"8:00",name:"PA-07/10",test:"GOP 2 for 2",type:"count",d:["PA-07","PA-10"],need:2},
+];
+
+/* ---------------- Live state ---------------- */
+let DOC=null, MODE=null, hist={}, manual={};
+try{manual=JSON.parse(localStorage.getItem("tells-manual")||"{}")}catch(e){}
+
+function etNow(){ return new Date(); }
+function etParts(d){ const f=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hour:"numeric",minute:"2-digit",hour12:true,weekday:"short"}); return f.format(d); }
+function etMinutes(d){ // minutes since midnight ET, continuing past 24h after election day
+  const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hour:"2-digit",minute:"2-digit",hour12:false,day:"2-digit"}).formatToParts(d);
+  const g=k=>+p.find(x=>x.type===k).value; let m=(g("hour")%24)*60+g("minute"); if(g("day")!==3) m+=1440; return m; }
+const T=(h,mi=0)=>h*60+mi;
+
+function idx(list,key){ return (list||[]).find(r=>r.k===key); }
+function senRace(st){ return idx(DOC.senate,"SG-"+st)||idx(DOC.senate,"SP-"+st); }
+function houseRace(d){ const [s,n]=d.split("-"); return idx(DOC.house,"HG-"+s+"-"+(+n)); }
+function govRace(st){ return idx(DOC.gov,"GG-"+st); }
+
+function topOf(r,p){ return (r.c||[]).filter(c=>c.p===p).sort((a,b)=>b.v-a.v)[0]; }
+function marginDR(r,ind){ // positive = D (or I) ahead
+  if(!r||!r.tv) return null;
+  const R=topOf(r,"R"), L=ind?topOf(r,"I"):topOf(r,"D");
+  if(!R||!L) return null;
+  return (L.v-R.v)/r.tv*100;
+}
+function leader(r){ if(!r||!r.c||!r.tv) return null; const s=[...r.c].sort((a,b)=>b.v-a.v); return {c:s[0],m:(s[0].v-(s[1]?s[1].v:0))/r.tv*100}; }
+function winner(r){ return r&&r.c?r.c.find(c=>c.w):null; }
+function isCalled(r){ return !!(r&&(r.es==="called"||winner(r))); }
+function fmtM(m,p){ if(m==null) return "—"; const a=Math.abs(m); const side=m>0.05?p:(m<-0.05?"R":"E"); return side==="E"?"Even":(side+"+"+a.toFixed(1)); }
+function cls(m,p){ if(m==null) return "mE"; return m>0.05?("m"+p):(m<-0.05?"mR":"mE"); }
+function bandOf(m,b){ if(m==null) return -1; if(m>=b[2]) return 3; if(m>=b[1]) return 2; if(m>=b[0]) return 1; return 0; }
+function fmtN(n){ return (n||0).toLocaleString(); }
+
+/* ---------------- Render ---------------- */
+function render(){
+  if(!DOC){ return; }
+  document.getElementById("upd").textContent="data "+new Date(DOC.updated).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  renderGauge(); renderTiles(); renderSenate(); renderHouse(); renderKeys(); renderGovs();
+}
+
+function senateNet(){
+  let dGain=0,rGain=0,iGain=0,dCalled=0,rCalled=0;
+  for(const r of DOC.senate){ const w=winner(r); if(!w) continue; const st=r.k.slice(3); const hold=SEN_HOLD[st];
+    if(w.p==="D") dCalled++; if(w.p==="R") rCalled++;
+    if(hold==="R"&&w.p==="D") dGain++; if(hold==="R"&&w.p==="I") iGain++; if(hold==="D"&&w.p==="R") rGain++; }
+  return {net:dGain-rGain,dGain,rGain,iGain,dCalled,rCalled};
+}
+function senateSignal(){ // median band across races with ≥50% in or called
+  const bs=[]; for(const s of SENATE){ const r=senRace(s.st); if(!r) continue; const m=marginDR(r,s.ind); if(m==null) continue; if(r.pr<50&&!isCalled(r)) continue; bs.push(bandOf(m,s.b)); }
+  if(!bs.length) return null; bs.sort((a,b)=>a-b); return {b:bs[Math.floor(bs.length/2)],n:bs.length};
+}
+/* ---------------- Gauge ---------------- */
+let gaugeMode="all";
+try{gaugeMode=localStorage.getItem("tells-gauge")||"all"}catch(e){}
+// Position on a 0..4 scale: 0 = deep Red Riptide, 1 = Riptide/Tide line, 2 = Tide/Wave line, 3 = Wave/Tsunami line, 4 = deep Tsunami.
+function senPos(m,b){ // b = [tide, wave, tsunami] lower bounds (D-margin)
+  if(m<b[0]) return Math.max(0, 1-(b[0]-m)/8);            // 8 pts below the Riptide line = pinned left
+  if(m<b[1]) return 1+(m-b[0])/(b[1]-b[0]);
+  if(m<b[2]) return 2+(m-b[1])/(b[2]-b[1]);
+  return Math.min(4, 3+(m-b[2])/6);                        // 6 pts past the Tsunami line = pinned right
+}
+function gaugeSignals(){
+  const sig=[]; // {pos, w, label}
+  for(const s of SENATE){ const r=senRace(s.st); if(!r) continue; const m=marginDR(r,s.ind); if(m==null) continue;
+    const w=isCalled(r)?1:Math.min(1,r.pr/100); if(r.pr<20&&!isCalled(r)) continue;
+    sig.push({pos:senPos(m,s.b),w:2*w,src:"S",label:s.st}); }
+  for(const h of HOUSE){ const r=houseRace(h.d); if(!r||!r.tv) continue; const L=leader(r); const wn=winner(r);
+    const p=wn?wn.p:L.c.p; const conf=wn?1:Math.min(1,r.pr/100); if(r.pr<30&&!wn) continue;
+    // Column b = "Dems take this seat ⇒ at least band b". D taking it reads as mid-band b; R holding/taking it reads as just below band b.
+    let pos; if(p==="D") pos=h.h==="D"?Math.min(4,h.band+0.5):h.band+0.6; else pos=h.h==="R"?Math.max(0,h.band-0.4):Math.max(0,h.band-0.6);
+    sig.push({pos,w:conf,src:"H",label:h.d}); }
+  for(const t of DASH){ const res=t.d.map(d=>{const r=houseRace(d);return {w:winner(r)};}); const rw=res.filter(x=>x.w&&x.w.p==="R").length, dw=res.filter(x=>x.w&&x.w.p==="D").length;
+    if(rw>=t.need) sig.push({pos:0.4,w:1.5,src:"H",label:t.name}); else if(dw>res.length-t.need) sig.push({pos:1.6,w:1,src:"H",label:t.name}); }
+  return sig;
+}
+function gaugeValue(){
+  const sig=gaugeSignals().filter(x=>gaugeMode==="all"||x.src===gaugeMode[0].toUpperCase());
+  const W=sig.reduce((a,x)=>a+x.w,0); if(!W) return {pos:null,n:0};
+  return {pos:sig.reduce((a,x)=>a+x.pos*x.w,0)/W,n:sig.length,nS:sig.filter(x=>x.src==="S").length,nH:sig.filter(x=>x.src==="H").length};
+}
+function arc(cx,cy,r,a0,a1){ const p=a=>[cx+r*Math.cos(a),cy+r*Math.sin(a)]; const [x0,y0]=p(a0),[x1,y1]=p(a1); return `M${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}`; }
+function renderGauge(){
+  const g=gaugeValue(); const cx=200,cy=190,R=170,r0=118; const cols=["#b8352e","#5b8fd9","#2f66c2","#1a3f85"];
+  const A=i=>Math.PI+i*(Math.PI/4); // 0..4 → π..2π
+  let segs=""; for(let i=0;i<4;i++){ const a0=A(i)+0.012,a1=A(i+1)-0.012; const mid=(a0+a1)/2;
+    const P=(r,a)=>`${(cx+r*Math.cos(a)).toFixed(2)} ${(cy+r*Math.sin(a)).toFixed(2)}`;
+    segs+=`<path d="M${P(R,a0)} A${R} ${R} 0 0 1 ${P(R,a1)} L${P(r0,a1)} A${r0} ${r0} 0 0 0 ${P(r0,a0)} Z" fill="${cols[i]}"/>`;
+    const lr=(R+r0)/2, lx=cx+lr*Math.cos(mid), ly=cy+lr*Math.sin(mid), rot=(mid*180/Math.PI)+90;
+    segs+=`<text class="gl" x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot} ${lx} ${ly})">${BANDS[i].toUpperCase()}</text>`;
+    const sr=r0-12, sx=cx+sr*Math.cos(mid), sy=cy+sr*Math.sin(mid);
+    segs+=`<text class="gs" x="${sx}" y="${sy}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot} ${sx} ${sy})">${BANDSUB[i]}</text>`; }
+  const deg=g.pos==null?-90:(g.pos/4*180-90);
+  const band=g.pos==null?-1:Math.min(3,Math.floor(g.pos));
+  const svg=`<svg viewBox="0 20 400 190" xmlns="http://www.w3.org/2000/svg">${segs}
+    <line x1="${cx-R-8}" y1="${cy}" x2="${cx-r0+4}" y2="${cy}" stroke="#0f1115" stroke-width="2"/>
+    <line x1="${cx+r0-4}" y1="${cy}" x2="${cx+R+8}" y2="${cy}" stroke="#0f1115" stroke-width="2"/>
+    <g class="needle" style="transform:rotate(${deg}deg)"><polygon points="${cx-5},${cy} ${cx+5},${cy} ${cx},${cy-R+4}" fill="${g.pos==null?'#555':'#f5f6fa'}"/><circle cx="${cx}" cy="${cy}" r="9" fill="#f5f6fa"/><circle cx="${cx}" cy="${cy}" r="4" fill="#0f1115"/></g></svg>`;
+  const read=g.pos==null?`<div class="big" style="color:var(--muted)">Waiting for returns</div><div class="sub">needle moves once races pass ~20–30% reporting</div>`
+    :`<div class="big"><span class="band b${band}" style="font-size:14px;vertical-align:middle">${BANDS[band]}</span></div><div class="sub">${g.pos.toFixed(2)} on 0–4 · ${g.nS||0} Senate + ${g.nH||0} House signals, weighted by % in</div>`;
+  const seg=`<div class="seg">${[["all","All"],["senate","Senate"],["house","House"]].map(([k,l])=>`<button class="${gaugeMode===k?"on":""}" data-g="${k}">${l}</button>`).join("")}</div>`;
+  document.getElementById("gauge").innerHTML=svg+`<div class="read">${read}</div>`+seg;
+  document.querySelectorAll("#gauge .seg button").forEach(b=>b.onclick=()=>{gaugeMode=b.dataset.g;try{localStorage.setItem("tells-gauge",gaugeMode)}catch(e){}renderGauge();});
+}
+function renderTiles(){
+  const n=senateNet(), ht=DOC.houseTally||{}, sig=senateSignal();
+  const hb = ht.D>=240?3:ht.D>=230?2:ht.D>=218?1:(ht.R>=218?0:-1);
+  const t=[
+   {k:"Senate net (D)",v:(n.net>0?"+":"")+n.net+"<span class='mu'> / +4</span>",s:`D gains ${n.dGain} · R gains ${n.rGain}${n.iGain?" · Osborn "+n.iGain:""} · called ${n.dCalled+n.rCalled+n.iGain}/35`},
+   {k:"Senate read",v:sig?`<span class="band b${sig.b}">${BANDS[sig.b]}</span>`:`<span class="band bx">waiting</span>`,s:sig?`median band, ${sig.n} race${sig.n>1?"s":""} ≥50% in`:"needs races ≥50% reported"},
+   {k:"House called",v:`<span class="mD">${ht.D||0}</span> <span class="mu">D</span> &nbsp;<span class="mR">${ht.R||0}</span> <span class="mu">R</span>`,s:`${ht.called||0}/${ht.total||435} called · 218 to control`},
+   {k:"House flips (AP)",v:`<span class="mD">+${ht.flipD||0}</span> <span class="mu">D</span> &nbsp;<span class="mR">+${ht.flipR||0}</span> <span class="mu">R</span>`,s:hb>=0?BANDS[hb]+" territory":"no chamber majority yet"},
+  ];
+  document.getElementById("tiles").innerHTML=t.map(x=>`<div class="tile"><div class="k">${x.k}</div><div class="v">${x.v}</div><div class="s">${x.s}</div></div>`).join("");
+}
+
+const open={};
+function renderSenate(){
+  let html=`<div class="sh">State</div><div class="sh">Race · RCP avg</div><div class="sh">Status</div>`+BANDS.map((b,i)=>`<div class="gh b${i}">${b.toUpperCase()}<small>${["GOP +3 to even","D +1 to +3","D +4 to +6","D +7 or more"][i]}</small></div>`).join("");
+  let lastClose=null;
+  for(const s of SENATE){
+    if(s.close!==lastClose){ html+=`<div class="rowlab">POLLS CLOSE ${s.close} PM ET</div>`; lastClose=s.close; }
+    const r=senRace(s.st); const m=r?marginDR(r,s.ind):null; const b=bandOf(m,s.b); const w=winner(r); const p=s.ind?"I":"D";
+    const early=r&&r.pr<30&&!w;
+    const status=w?`<span class="called ${w.p}">AP CALL · ${w.p}</span>`:(r&&r.tv?`<span class="pr">${r.pr}% in</span>`:`<span class="pr">no votes</span>`);
+    html+=`<div class="sst" data-st="${s.st}">${s.st}${s.sp?"<span class='mu'>*</span>":""}<small>${s.close} PM</small></div>
+      <div class="srace" data-st="${s.st}"><div class="mt">${s.r} <span class="pty">(R)</span> v. ${s.d}${s.ind?"":" <span class='pty'>(D)</span>"}</div><div class="mu">RCP ${s.rcp}</div></div>
+      <div class="sstat">${status}</div>`;
+    for(let i=0;i<4;i++){
+      const on=i===b;
+      html+=`<div class="bc b${i} ${on?"on":""}">${s.lbl[i]}${on?`<div class="lm ${early?"":""}">${fmtM(m,p)}${early?"<small> early</small>":""}</div>`:""}</div>`;
+    }
+    if(open[s.st]&&r){ html+=`<div class="sdet"><div class="cands">${r.c.map(c=>`<div class="cand"><div>${c.w?"✔ ":""}${c.n} <span class="mu">(${c.p})</span></div><div>${fmtN(c.v)} <span class="mu">${r.tv?(c.v/r.tv*100).toFixed(1)+"%":""}</span></div><div class="bar"><i class="p${["D","R","I"].includes(c.p)?c.p:"O"}" style="width:${r.tv?c.v/r.tv*100:0}%"></i></div></div>`).join("")}</div><div class="mu" style="margin-top:6px">${fmtN(r.tv)} votes · ${r.pr}% reporting · status: ${r.es}</div></div>`; }
+  }
+  const tb=document.getElementById("senate"); tb.innerHTML=html;
+  tb.querySelectorAll("[data-st]").forEach(el=>el.onclick=()=>{open[el.dataset.st]=!open[el.dataset.st];renderSenate();});
+}
+function chip(h){
+  const r=houseRace(h.d); const L=r?leader(r):null; const w=winner(r);
+  const led=L&&r.tv?(L.c.p==="D"?"ledD":L.c.p==="R"?"ledR":""):"";
+  const line=w?`✔ ${w.n.split(" ").slice(-1)[0]} (${w.p})`:(r&&r.tv?`${L.c.p}+${L.m.toFixed(1)} · ${r.pr}% in`:"no votes");
+  return `<div class="chip h${h.h} ${led} ${w?"win"+w.p:""} ${r&&r.sw?"flip":""}" title="${h.d}"><div class="d">${h.d}${h.star?" ★":""}</div><div class="w">${h.w}</div><div class="r">${line}</div></div>`;
+}
+function dashChip(t){
+  const res=t.d.map(d=>{const r=houseRace(d);const L=r?leader(r):null;const w=winner(r);return {d,r,L,w};});
+  let line, cleared=null;
+  if(t.type==="margin"){ const x=res[0]; const m=x.L&&x.r.tv?(x.L.c.p==="R"?x.L.m:-x.L.m):null; line=m==null?"no votes":(x.w?"✔ ":"")+(m>=0?"R+":"D+")+Math.abs(m).toFixed(1)+" · "+x.r.pr+"% in"; if(x.w) cleared=(x.w.p==="R"&&m>=t.need); }
+  else { const rw=res.filter(x=>x.w&&x.w.p==="R").length, dw=res.filter(x=>x.w&&x.w.p==="D").length, rl=res.filter(x=>!x.w&&x.L&&x.r.tv&&x.L.c.p==="R").length;
+    line=`R won ${rw}, D won ${dw}, R leads ${rl}`; if(rw>=t.need) cleared=true; else if(dw>res.length-t.need) cleared=false; }
+  const st=cleared===true?"ledR":cleared===false?"ledD":"";
+  return `<div class="chip dash ${st}"><div class="d">${t.name}</div><div class="w">${t.test}${cleared===true?" — CLEARED (red signal)":cleared===false?" — FAILED":""}</div><div class="r">${line}</div></div>`;
+}
+function renderHouse(){
+  let html=`<div></div>`+BANDS.map((b,i)=>`<div class="gh b${i}">${b.toUpperCase()}<small>${BANDSUB[i]}</small></div>`).join("");
+  for(const row of ROWS){
+    html+=`<div class="rowlab">${row.t}<small>${row.s}</small></div>`;
+    for(let b=0;b<4;b++){
+      const items=HOUSE.filter(h=>h.row===row.t&&h.band===b).map(chip);
+      if(b===0) items.unshift(...DASH.filter(t=>t.row===row.t).map(dashChip));
+      html+=`<div class="cell ${["rip","tide","wave","tsu"][b]}">${items.join("")}</div>`;
+    }
+  }
+  document.getElementById("house").innerHTML=html;
+  // column tally
+  const tal=[0,1,2,3].map(b=>{const hs=HOUSE.filter(h=>h.band===b);let dW=0,rW=0,dL=0,rL=0;for(const h of hs){const r=houseRace(h.d);const w=winner(r);const L=r?leader(r):null;if(w){if(w.p==="D")dW++;else rW++;}else if(L&&r.tv){if(L.c.p==="D")dL++;else rL++;}}return {n:hs.length,dW,rW,dL,rL};});
+  document.getElementById("dashtests").innerHTML="Column check — "+tal.map((t,i)=>`<b>${BANDS[i]}</b>: ${t.n} seats · D won ${t.dW}, R won ${t.rW}, D leads ${t.dL}, R leads ${t.rL}`).join(" &nbsp;|&nbsp; ");
+}
+
+function keyDefs(){
+  const now=etMinutes(etNow());
+  const S=st=>senRace(st), G=st=>govRace(st);
+  const sm=(st,ind)=>{const r=S(st);return r?marginDR(r,ind):null;};
+  const gm=st=>{const r=G(st);return r?marginDR(r):null;};
+  const pr=r=>r?r.pr:0;
+  const rec=(k,v)=>{(hist[k]=hist[k]||[]).push({t:Date.now(),v});if(hist[k].length>60)hist[k].shift();};
+  const txg=gm("TX"); if(txg!=null) rec("txg",txg);
+  const trend=k=>{const h=hist[k]||[];if(h.length<4)return null;const a=h[h.length-4].v,b=h[h.length-1].v;return b-a;};
+  return [
+   {t:"7:30",txt:"NC called for Cooper",sub:"→ baseline wave is real",auto:()=>{const r=S("NC"),w=winner(r);return w?w.p==="D":(now>=T(21)&&pr(r)>=80?false:null);}},
+   {t:"8–9",txt:"Big D. Graham win in SC",sub:"→ Rs came home, polls missed (big = R 9+)",auto:()=>{const r=S("SC"),m=sm("SC");if(!r||m==null)return null;if(winner(r))return winner(r).p==="R"&&m<=-9;return pr(r)>=70?m<=-9:null;}},
+   {t:"8–9",txt:"Brown 4+ ahead of his 2024 race",sub:"→ OH likely flips (statewide proxy: 2024 was Moreno +3.6, so Brown ≥ +0.4 now)",auto:()=>{const r=S("OH"),m=sm("OH");if(m==null||pr(r)<50)return null;return m>=0.4;}},
+   {t:"8–10",txt:"Paxton trails Abbott",sub:"→ Rs splitting tickets; TX at risk (R margin Senate < R margin governor by 2+)",auto:()=>{const s=sm("TX"),g=gm("TX");if(s==null||g==null||pr(S("TX"))<30)return null;return (-s)<(-g)-2;}},
+   {t:"8–10",txt:"El-Sayed lags Harris '24 in Detroit",sub:"→ Dem trouble (county-level: mark manually)",man:"elsayed"},
+   {t:"9:00",txt:"FL Senate still uncalled",sub:"→ good Dem night",auto:()=>{if(now<T(21))return null;return !isCalled(S("FL"));}},
+   {t:"9:00",txt:"Talarico tops Harris '24 in S. Texas",sub:"→ TX in play (county-level: mark manually)",man:"talarico"},
+   {t:"9–10",txt:"FL governor still uncalled",sub:"→ very good Dem night",auto:()=>{if(now<T(21,30))return null;return !isCalled(G("FL"));}},
+   {t:"9–10",txt:"Hamilton wins Johnson Co. (KS) by 20+",sub:"→ KS in play (county-level: mark manually)",man:"johnson"},
+   {t:"10:00",txt:"Iowa farm GOP turnout < 2022",sub:"→ farmers fleeing GOP (county-level: mark manually)",man:"iowa"},
+   {t:"By 11",txt:"GA Gov. Jackson (R) called before Atlanta",sub:"→ no wave",auto:()=>{const r=G("GA"),w=winner(r);if(w)return w.p==="R"&&now<=T(23,15);return now>T(23)?false:null;}},
+   {t:"11:00",txt:"Abbott uncalled, lead shrinking",sub:"→ GOP trouble",auto:()=>{if(now<T(23))return null;const r=G("TX");if(isCalled(r))return false;const tr=trend("txg");if(tr==null)return null;return tr>0.3;}},
+   {t:"11:00",txt:"Polls close in Alaska",sub:"midnight ET statewide (1 AM for Aleutians); RCV tabulation starts Nov. 18",info:true},
+   {t:"3 AM",txt:"Senate unresolved",sub:"→ GOP beat polls, or AK/ME pending",auto:()=>{if(now<T(27))return null;const n=senateNet();return !(n.net>=4||n.rGain-n.dGain>=0&&n.dCalled+n.rCalled>=33);}},
+  ];
+}
+function renderKeys(){
+  const defs=keyDefs();
+  document.getElementById("keys").innerHTML=defs.map((k,i)=>{
+    let st="pend", lab="pending";
+    if(k.info){st="";lab="info";}
+    else if(k.man){const v=manual[k.man];st=v===true?"yes":v===false?"no":"man";lab=v===true?"YES":v===false?"NO":"mark";}
+    else {const v=k.auto();if(v===true){st="yes";lab="YES";}else if(v===false){st="no";lab="NO";}}
+    return `<div class="key ${st}" data-i="${i}"><div class="t">${k.t}</div><div class="txt">${k.txt}<small>${k.sub}</small></div><div class="sig">${lab}</div></div>`;
+  }).join("");
+  document.querySelectorAll("#keys .key").forEach(el=>{const k=defs[+el.dataset.i];if(!k.man)return;el.querySelector(".sig").onclick=()=>{const v=manual[k.man];manual[k.man]=v===undefined?true:v===true?false:undefined;try{localStorage.setItem("tells-manual",JSON.stringify(manual))}catch(e){}renderKeys();};});
+}
+function renderGovs(){
+  const G=[{st:"FL",r:"Donalds (R) v. Jolly (D)"},{st:"GA",r:"Jackson (R) v. Bottoms (D)"},{st:"TX",r:"Abbott (R) v. Hinojosa (D)"}];
+  document.getElementById("govs").innerHTML=G.map(g=>{const r=govRace(g.st);const m=r?marginDR(r):null;const w=winner(r);const L=r?leader(r):null;
+    const cands=r?r.c.slice(0,2).map(c=>`${c.w?"✔ ":""}${c.n} (${c.p}) ${r.tv?(c.v/r.tv*100).toFixed(1)+"%":""}`).join("<br>"):"—";
+    return `<div class="gov"><div class="st">${g.st} Governor</div><div class="mu">${g.r}</div><div class="m ${cls(m,"D")}" style="margin:4px 0">${w?`<span class="called ${w.p}">AP CALL · ${w.p}</span> `:""}${fmtM(m,"D")} <span class="pr">${r?r.pr+"% in":""}</span></div><div class="mu">${cands}</div></div>`;}).join("");
+}
+
+/* ---------------- Data plumbing ---------------- */
+function setMode(txt,st){ document.getElementById("mode").textContent=txt; const d=document.getElementById("dot"); d.className="dot"+(st?" "+st:""); }
+function banner(msg){ const b=document.getElementById("banner"); b.style.display=msg?"block":"none"; b.textContent=msg||""; }
+
+// Standalone mode: fetch CNN directly (CORS is open) and condense in-page.
+const CNN="https://politics.api.cnn.io/results/national-races/2026-";
+const HOUSE_KEYS=new Set([...HOUSE.map(h=>h.d),...DASH.flatMap(t=>t.d)].map(d=>{const [s,n]=d.split("-");return s+"-"+(+n);}));
+function slim(r){ const c=(r.candidates||[]).map(c=>({n:c.fullName,p:c.candidatePartyCode,v:c.voteNum||0,w:!!c.winner})).sort((a,b)=>b.v-a.v).slice(0,3);
+  return {k:r.ecKey.replace("2026-",""),c,pr:r.percentReporting||0,tv:r.totalVote||0,es:r.editorialStatus,sw:!!r.isSwitch}; }
+async function fetchCNN(){
+  const [sg,hg,gg]=await Promise.all(["SG","HG","GG"].map(c=>fetch(CNN+c+".json?t="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(c+" "+r.status);return r.json();})));
+  const doc={updated:new Date().toISOString(),source:"CNN (direct)",senate:sg.map(slim),house:[],gov:[],houseTally:{D:0,R:0,I:0,called:0,total:hg.length,flipD:0,flipR:0}};
+  for(const r of hg){ const key=r.ecKey.replace("2026-HG-",""); if(HOUSE_KEYS.has(key)) doc.house.push(slim(r));
+    const w=(r.candidates||[]).find(c=>c.winner); if(r.editorialStatus==="called"||w){ const t=doc.houseTally; t.called++; const p=w?w.candidatePartyCode:"?"; if(p in t) t[p]++; if(r.isSwitch){ if(p==="D") t.flipD++; else if(p==="R") t.flipR++; } } }
+  for(const r of gg){ if(["FL","GA","TX"].includes(r.stateAbbreviation)) doc.gov.push(slim(r)); }
+  return doc;
+}
+let failures=0;
+async function pollDirect(){
+  try{ DOC=await fetchCNN(); failures=0; setMode("LIVE · CNN/AP direct · 30s","live"); banner(""); render(); }
+  catch(e){ failures++; setMode("fetch failed ×"+failures,"err"); if(!DOC) banner("Couldn't reach CNN's results feed from this page ("+e.message+"). If you opened this inside claude.ai, the page should be reading the relay instead; if you opened it as a file, check your connection."); }
+  setTimeout(pollDirect,30000);
+}
+
+async function start(){
+  setInterval(()=>{document.getElementById("clock").textContent=etParts(etNow())+" ET";},1000);
+  document.getElementById("clock").textContent=etParts(etNow())+" ET";
+  setInterval(()=>{if(DOC)renderKeys();},60000);
+  const hasClaudeFn=()=>typeof window.claude==="object" && window.claude && typeof window.claude.use==="function";
+  let hasClaude=hasClaudeFn();
+  if(!hasClaude){
+    // Try one direct fetch; if the host blocks it (claude.ai CSP), wait briefly for the artifact runtime.
+    try{ DOC=await fetchCNN(); setMode("LIVE · CNN/AP direct · 30s","live"); render(); setTimeout(pollDirect,30000); return; }
+    catch(e){ for(let i=0;i<20&&!hasClaudeFn();i++) await new Promise(r=>setTimeout(r,500)); hasClaude=hasClaudeFn(); }
+  }
+  if(hasClaude){
+    setMode("connecting to relay…");
+    let db=null; try{ db=await window.claude.use("db"); }catch(e){}
+    if(db){
+      let got=false; const timer=setTimeout(()=>{ if(!got){ setMode("relay: waiting for first snapshot","err"); banner("No data in the relay yet. Claude pushes a fresh snapshot every few minutes once polling starts."); } },10000);
+      try{
+        db.doc("live/latest").onSnapshot(snap=>{ got=true; clearTimeout(timer); const d=snap&&(typeof snap.data==="function"?snap.data():snap.data||snap); if(d&&d.senate){ DOC=d; setMode("LIVE · relay (CNN/AP via Claude)","live"); banner(""); render(); } else { setMode("relay: empty","err"); } },
+          err=>{ setMode("relay error","err"); banner("Relay read failed: "+(err&&err.message||err)); });
+      }catch(e){ setMode("relay error","err"); banner("Relay read failed: "+e.message); }
+      return;
+    }
+    setMode("relay unavailable (signed out?)","err"); banner("Sign in to claude.ai to read the live relay, or open the standalone file version.");
+    return;
+  }
+  pollDirect();
+}
+start();
+</script>
+</body>
+</html>
