@@ -168,7 +168,7 @@ button.small{background:var(--panel2);border:1px solid var(--line);color:var(--t
     <div class="govs" id="govs"></div>
   </section>
 
-  <div class="note" id="foot">Counts and calls: AP via CNN's public results feed. Benchmarks: the "early tells" graphic (DDHQ, Cook, Rove/WSJ, Chuck Todd, Axios, 270toWin). Senate baseline 53 R – 47 D.</div>
+  <div class="note" id="foot"><span id="srcbtn"></span> Counts and calls: AP via CNN's public results feed, with NYT's AP feed as automatic backup. Benchmarks: the "early tells" graphic (DDHQ, Cook, Rove/WSJ, Chuck Todd, Axios, 270toWin). Senate baseline 53 R – 47 D.</div>
 </main>
 
 <script>
@@ -456,14 +456,45 @@ async function fetchCNN(){
   for(const r of gg){ if(["FL","GA","TX"].includes(r.stateAbbreviation)) doc.gov.push(slim(r)); }
   return doc;
 }
-let failures=0;
+// Backup: NYT's AP-sourced public feed (also open CORS). Same condensed shape.
+const NYT="https://static01.nyt.com/elections-assets/pages/data/2026-11-03/results-";
+const NYTP={GOP:"R",DEM:"D",IND:"I"};
+function slimNYT(r,kind){
+  const ru=(r.reporting_units||[])[0]||{}; const meta=r.candidate_metadata||{}; const won=new Set(((r.outcome||{}).won)||[]);
+  const st=ru.state_postal||r.nyt_id.slice(0,2);
+  const c=(ru.candidates||[]).map(x=>{const m=meta[x.nyt_id]||{}; const pid=(m.party||{}).nyt_id||""; return {n:[m.first_name,m.last_name].filter(Boolean).join(" ")||x.nyt_id,p:NYTP[pid]||pid.slice(0,3),v:(x.votes||{}).total||0,w:won.has(x.nyt_id)};}).sort((a,b)=>b.v-a.v).slice(0,3);
+  let k; if(kind==="S") k=(r.nyt_id.includes("-S_W-")?"SP-":"SG-")+st; else if(kind==="H") k="HG-"+st+"-"+(+r.seat_number||1); else k="GG-"+st;
+  const called=won.size>0||r.race_call_status==="called";
+  const gained=(r.outcome||{}).gained; const sw=!!gained;
+  return {k,c,pr:Math.round(ru.eevp||0),tv:ru.total_votes||0,es:called?"called":(r.race_call_status||"scheduled"),sw};
+}
+async function fetchNYT(){
+  const [sg,hg,gg]=await Promise.all(["senate","house","governor"].map(c=>fetch(NYT+c+".json?t="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("NYT "+c+" "+r.status);return r.json();})));
+  const doc={updated:new Date().toISOString(),source:"NYT (AP) direct",senate:[],house:[],gov:[],houseTally:{D:0,R:0,I:0,called:0,total:0,flipD:0,flipR:0}};
+  for(const r of sg.races||[]) doc.senate.push(slimNYT(r,"S"));
+  for(const r of hg.races||[]){ if(!r.seat_number||r.nyt_id.startsWith("US-")) continue; const x=slimNYT(r,"H"); doc.houseTally.total++;
+    if(HOUSE_KEYS.has(x.k.replace("HG-",""))) doc.house.push(x);
+    const w=x.c.find(c=>c.w); if(w){ const t=doc.houseTally; t.called++; if(w.p in t) t[w.p]++; if(x.sw){ if(w.p==="D") t.flipD++; else if(w.p==="R") t.flipR++; } } }
+  for(const r of gg.races||[]){ const x=slimNYT(r,"G"); if(["GG-FL","GG-GA","GG-TX"].includes(x.k)) doc.gov.push(x); }
+  if(!doc.senate.length) throw new Error("NYT feed empty");
+  return doc;
+}
+let failures=0, srcPref="auto";
+try{srcPref=localStorage.getItem("tells-src")||"auto"}catch(e){}
+async function fetchAny(){
+  const order=srcPref==="nyt"?[["NYT",fetchNYT],["CNN",fetchCNN]]:[["CNN",fetchCNN],["NYT",fetchNYT]];
+  let lastErr=null;
+  for(const [name,fn] of order){ try{ const d=await fn(); d.via=name; return d; }catch(e){ lastErr=e; } }
+  throw lastErr||new Error("no source");
+}
 async function pollDirect(){
-  try{ DOC=await fetchCNN(); failures=0; setMode("LIVE · CNN/AP direct · 30s","live"); banner(""); render(); }
-  catch(e){ failures++; setMode("fetch failed ×"+failures,"err"); if(!DOC) banner("Couldn't reach CNN's results feed from this page ("+e.message+"). If you opened this inside claude.ai, the page should be reading the relay instead; if you opened it as a file, check your connection."); }
+  try{ DOC=await fetchAny(); failures=0; setMode("LIVE · "+(DOC.via==="CNN"?"CNN/AP":"NYT/AP")+" direct · 30s","live"); banner(""); render(); }
+  catch(e){ failures++; setMode("fetch failed ×"+failures,"err"); if(!DOC) banner("Couldn't reach CNN or NYT results feeds from this page ("+e.message+"). Check your connection, or open the claude.ai version which reads a relay."); }
   setTimeout(pollDirect,30000);
 }
 
-async function start(){
+async function renderSrc(){ const el=document.getElementById("srcbtn"); if(!el) return; el.innerHTML=`Source: ${["auto","nyt"].map(k=>`<button class="small" style="${srcPref===k?"border-color:#8d93a3;color:#fff":""}" data-s="${k}">${k==="auto"?"CNN first":"NYT first"}</button>`).join(" ")}`; el.querySelectorAll("button").forEach(b=>b.onclick=()=>{srcPref=b.dataset.s;try{localStorage.setItem("tells-src",srcPref)}catch(e){}renderSrc();}); }
+async function start(){ renderSrc();
   setInterval(()=>{document.getElementById("clock").textContent=etParts(etNow())+" ET";},1000);
   document.getElementById("clock").textContent=etParts(etNow())+" ET";
   setInterval(()=>{if(DOC)renderKeys();},60000);
@@ -471,7 +502,7 @@ async function start(){
   let hasClaude=hasClaudeFn();
   if(!hasClaude){
     // Try one direct fetch; if the host blocks it (claude.ai CSP), wait briefly for the artifact runtime.
-    try{ DOC=await fetchCNN(); setMode("LIVE · CNN/AP direct · 30s","live"); render(); setTimeout(pollDirect,30000); return; }
+    try{ DOC=await fetchAny(); setMode("LIVE · "+(DOC.via==="CNN"?"CNN/AP":"NYT/AP")+" direct · 30s","live"); render(); setTimeout(pollDirect,30000); return; }
     catch(e){ for(let i=0;i<20&&!hasClaudeFn();i++) await new Promise(r=>setTimeout(r,500)); hasClaude=hasClaudeFn(); }
   }
   if(hasClaude){
